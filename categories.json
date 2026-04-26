@@ -1,0 +1,30 @@
+[
+    {
+        "name": "Food",
+        "color": "#F97316",
+        "budget_monthly": 8000,
+        "icon": "fa-solid fa-utensils",
+        "id": 1
+    },
+    {
+        "name": "Transport",
+        "color": "#0EA5E9",
+        "budget_monthly": 5000,
+        "icon": "fa-solid fa-bus",
+        "id": 2
+    },
+    {
+        "name": "Bills",
+        "color": "#8B5CF6",
+        "budget_monthly": 7000,
+        "icon": "fa-solid fa-file-invoice",
+        "id": 3
+    },
+    {
+        "name": "Shopping",
+        "color": "#EC4899",
+        "budget_monthly": 6000,
+        "icon": "fa-solid fa-bag-shopping",
+        "id": 4
+    }
+]

@@ -1,0 +1,57 @@
+[
+    {
+        "name": "bread and milk",
+        "amount": 250,
+        "category_id": 1,
+        "date": "2026-04-24",
+        "notes": "",
+        "tags": [],
+        "is_recurring": false,
+        "recurring_period": null,
+        "id": 1
+    },
+    {
+        "name": "to lahore",
+        "amount": 500,
+        "category_id": 2,
+        "date": "2026-04-24",
+        "notes": "",
+        "tags": [],
+        "is_recurring": false,
+        "recurring_period": null,
+        "id": 2
+    },
+    {
+        "name": "Electricity bill",
+        "amount": 2300,
+        "category_id": 3,
+        "date": "2026-04-24",
+        "notes": "",
+        "tags": [],
+        "is_recurring": false,
+        "recurring_period": null,
+        "id": 3
+    },
+    {
+        "name": "2 gents suits",
+        "amount": 2500,
+        "category_id": 4,
+        "date": "2026-04-24",
+        "notes": "",
+        "tags": [],
+        "is_recurring": false,
+        "recurring_period": null,
+        "id": 4
+    },
+    {
+        "name": "shirt",
+        "amount": 100,
+        "category_id": 4,
+        "date": "2026-04-24",
+        "notes": "",
+        "tags": [],
+        "is_recurring": false,
+        "recurring_period": null,
+        "id": 5
+    }
+]

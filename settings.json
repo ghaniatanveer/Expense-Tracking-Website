@@ -1,0 +1,6 @@
+{
+    "currency": "USD",
+    "theme": "light",
+    "default_view": "dashboard",
+    "monthly_budget_limit": 0
+}

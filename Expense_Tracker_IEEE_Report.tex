@@ -1,0 +1,389 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{url}
+\usepackage{float}
+
+\lstdefinestyle{mystyle}{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    tabsize=2,
+    showstringspaces=false
+}
+\lstset{style=mystyle}
+
+\begin{document}
+
+\title{Expense Tracker Pro: A Smart Personal Finance Manager with File-Based REST Architecture and Lightweight Forecasting}
+
+\author{
+\IEEEauthorblockN{Your Name}
+\IEEEauthorblockA{
+Department of Computer Science \\
+Your Institution \\
+City, Country \\
+email@domain.com
+}
+}
+
+\maketitle
+
+\begin{abstract}
+Expense Tracker Pro is a full-stack web application designed to simplify personal financial management by combining practical bookkeeping features with analytical and predictive capabilities. The system uses a PHP REST backend with JSON file persistence and a modular Vanilla JavaScript frontend. Core functionalities include CRUD operations for expenses and categories, monthly budget control, recurring expense automation, report export in CSV/PDF formats, and responsive user experience with dark/light mode. The analytics module uses Chart.js to visualize spending patterns through pie, bar, and line charts. A lightweight machine learning component applies linear regression on monthly aggregates to estimate next-month expenditure and provide confidence cues. This paper presents the problem context, architecture, implementation details, API contract, testing methodology, limitations, and future extensions. The proposed solution emphasizes low deployment complexity while delivering professional-grade features suitable for students, freelancers, and household users.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Expense Tracking, REST API, PHP, JavaScript, Chart.js, Linear Regression, Budget Management, Recurring Expenses
+\end{IEEEkeywords}
+
+\section{Introduction}
+Personal expense management is essential for financial discipline, budgeting, and long-term planning. However, many users still rely on manual notebooks or ad-hoc spreadsheets, which create challenges in consistency, transparency, and analytical depth. Manual methods are often weak in categorization, trend interpretation, and proactive warnings when spending crosses acceptable limits.
+
+Expense Tracker Pro addresses these issues by offering a web-based platform with structured data entry, searchable history, category-level budget controls, and visual analytics. In addition to standard CRUD operations, the system introduces forecasting through a lightweight client-side machine learning model. This allows users to view not only current and past spending but also probable near-future expenditure.
+
+The project objectives are:
+\begin{enumerate}
+    \item Build a robust expense/category management workflow.
+    \item Add budget intelligence with progress bars and alerts.
+    \item Provide reporting with interactive charts and exports.
+    \item Automate recurring expenses.
+    \item Integrate simple predictive analytics.
+\end{enumerate}
+
+The implementation stack is intentionally lightweight: PHP for backend logic, JSON files for storage, and Vanilla JavaScript for frontend orchestration.
+
+\section{Related Work and Motivation}
+Most lightweight finance tools in educational settings focus on data entry and static tabular records. Advanced systems include forecasting and account integration, but require complex infrastructure and authentication ecosystems. The motivation in this project is to balance capability and deployment simplicity: all core functions run without external databases or cloud dependencies.
+
+The selected architecture offers three practical advantages:
+\begin{itemize}
+    \item fast setup for academic demonstrations and prototypes,
+    \item transparent storage (human-readable JSON),
+    \item full control over frontend and backend behavior.
+\end{itemize}
+
+While file-based systems are not ideal for high concurrency, they are highly suitable for small-scale single-user environments and educational projects.
+
+\section{System Architecture}
+\subsection{High-Level Design}
+The solution follows a two-layer model:
+\begin{itemize}
+    \item \textbf{Client Layer:} HTML/CSS/JavaScript UI, local state manager, chart rendering, export utilities, and forecasting module.
+    \item \textbf{Service Layer:} PHP endpoint handler for CRUD and utility operations, reading/writing JSON files.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.9\linewidth}{
+\centering
+[Figure Placeholder]\\
+Browser UI (index.php + main.js + script.js + ml-model.js)\\
+$\downarrow$ Fetch API requests\\
+backend.php (routing, validation, persistence)\\
+$\downarrow$\\
+categories.json, expenses.json, recurring.json, settings.json
+}}
+\caption{Architecture Diagram Placeholder}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Module Responsibilities}
+\textbf{Frontend Modules}
+\begin{itemize}
+    \item \texttt{main.js}: app bootstrapping, event binding, rendering orchestration.
+    \item \texttt{script.js}: store pattern, API helpers, filter/sort, exports, toast notifications.
+    \item \texttt{ml-model.js}: linear regression forecast and anomaly detection.
+\end{itemize}
+
+\textbf{Backend Module}
+\begin{itemize}
+    \item \texttt{backend.php}: endpoint routing by entity and method, input validation, error handling, JSON serialization.
+\end{itemize}
+
+\section{Data Model and Persistence}
+The project stores all records in JSON files. This design allows direct inspection and easy backup.
+
+\subsection{categories.json}
+\begin{lstlisting}[language=json,caption={Category JSON Record}]
+[
+  {
+    "id": 1,
+    "name": "Food",
+    "color": "#f97316",
+    "icon": "fa-solid fa-tag",
+    "budget_monthly": 2500
+  }
+]
+\end{lstlisting}
+
+\subsection{expenses.json}
+\begin{lstlisting}[language=json,caption={Expense JSON Record}]
+[
+  {
+    "id": 101,
+    "name": "Groceries",
+    "amount": 74.9,
+    "category_id": 1,
+    "date": "2026-04-20",
+    "notes": "Weekly purchase",
+    "tags": ["home", "essentials"],
+    "is_recurring": false,
+    "recurring_period": null
+  }
+]
+\end{lstlisting}
+
+\subsection{recurring.json}
+\begin{lstlisting}[language=json,caption={Recurring JSON Record}]
+[
+  {
+    "id": 12,
+    "name": "Internet Bill",
+    "amount": 49.99,
+    "category_id": 3,
+    "period": "monthly",
+    "next_date": "2026-05-01"
+  }
+]
+\end{lstlisting}
+
+\subsection{settings.json}
+\begin{lstlisting}[language=json,caption={Settings JSON Record}]
+{
+  "currency": "USD",
+  "theme": "light",
+  "default_view": "dashboard",
+  "monthly_budget_limit": 5000
+}
+\end{lstlisting}
+
+\section{API Specification}
+The backend follows REST-like semantics through query-based entity routing.
+
+\begin{table}[H]
+\caption{Core API Endpoints}
+\label{tab:api}
+\centering
+\begin{tabular}{|m{1.3cm}|m{3.6cm}|m{2.6cm}|m{2.2cm}|}
+\hline
+\textbf{Method} & \textbf{Endpoint} & \textbf{Purpose} & \textbf{Body/Params} \\
+\hline
+GET & /backend.php?entity=expenses & Fetch expenses & Optional filters \\
+\hline
+POST & /backend.php?entity=expenses & Add expense & JSON payload \\
+\hline
+PUT & /backend.php?entity=expenses\&id=\{id\} & Update expense & JSON payload \\
+\hline
+DELETE & /backend.php?entity=expenses\&id=\{id\} & Delete expense & id \\
+\hline
+GET & /backend.php?entity=categories & Fetch categories & -- \\
+\hline
+POST & /backend.php?entity=categories & Add category & JSON payload \\
+\hline
+PUT & /backend.php?entity=categories\&id=\{id\} & Update category & JSON payload \\
+\hline
+DELETE & /backend.php?entity=categories\&id=\{id\} & Delete category & id \\
+\hline
+GET & /backend.php?entity=recurring & Fetch recurring & -- \\
+\hline
+POST & /backend.php?entity=recurring & Add recurring rule & JSON payload \\
+\hline
+POST & /backend.php?entity=recurring-run & Generate due recurring & -- \\
+\hline
+GET & /backend.php?entity=settings & Get settings & -- \\
+\hline
+PUT & /backend.php?entity=settings & Update settings & JSON payload \\
+\hline
+GET & /backend.php?entity=reports\&from=...\&to=... & Date-range report & Query params \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Request/Response Example}
+\begin{lstlisting}[language=json,caption={POST Expense Request}]
+{
+  "name": "Coffee",
+  "amount": 4.5,
+  "category_id": 2,
+  "date": "2026-04-24",
+  "notes": "Meeting",
+  "tags": ["office"],
+  "is_recurring": false,
+  "recurring_period": null
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=json,caption={Standard Success Response}]
+{
+  "success": true,
+  "message": "Expenses created",
+  "data": {
+    "id": 145,
+    "name": "Coffee",
+    "amount": 4.5
+  }
+}
+\end{lstlisting}
+
+\section{Feature Implementation}
+\subsection{Expense and Category CRUD}
+Expense Tracker Pro supports complete create, read, update, and delete functionality. The frontend validates required fields before sending payloads; the backend validates again for safety. Sorting and filtering are available directly in the expense table.
+
+\subsection{Budget Management}
+Each category includes a monthly budget. Current month spending is compared against this cap and visualized via progress bars. Alert states are determined by thresholds:
+\begin{itemize}
+    \item below 80\%: normal,
+    \item 80\%--99\%: warning,
+    \item 100\% and above: exceeded.
+\end{itemize}
+An overall monthly budget is also tracked via \texttt{settings.json}.
+
+\subsection{Reporting and Visualization}
+The dashboard includes:
+\begin{itemize}
+    \item pie chart for category distribution,
+    \item bar chart for six-month trend,
+    \item line chart for cumulative spending over time.
+\end{itemize}
+Users can export filtered report data as CSV and generate print-friendly PDF output.
+
+\subsection{Recurring Expense Automation}
+Recurring templates store \texttt{period} and \texttt{next\_date}. During startup or manual trigger, due entries are added to \texttt{expenses.json} and next execution dates are shifted by one week or one month.
+
+\subsection{User Experience}
+The interface uses responsive layouts, card-based dashboard presentation, theme switching, toast notifications, and clear action buttons to reduce friction in frequent usage.
+
+\section{Machine Learning Forecasting}
+\subsection{Method}
+The forecasting model applies linear regression:
+\[
+y = mx + b
+\]
+where \(x\) is the month index and \(y\) is total monthly expenditure. The model is computed in-browser using historical monthly aggregates.
+
+\subsection{Pipeline}
+\begin{enumerate}
+    \item Group expenses by month.
+    \item Build ordered points \((x, y)\).
+    \item Compute slope and intercept by least squares.
+    \item Predict the next point \(y_{t+1}\).
+    \item Estimate confidence from fit quality.
+\end{enumerate}
+
+\subsection{Anomaly Flagging}
+The system additionally computes mean and standard deviation of amounts; values above \(\mu + 2\sigma\) are marked as anomalies in the expense table.
+
+\subsection{Limitations}
+\begin{itemize}
+    \item linear assumption may not capture seasonal shifts,
+    \item model quality depends on history length,
+    \item no external variables (salary cycles, events, inflation) included.
+\end{itemize}
+
+\section{User Manual}
+\subsection{Installation Steps}
+\begin{enumerate}
+    \item Install a PHP-capable server environment.
+    \item Copy project files to server root.
+    \item Ensure write permission on JSON files.
+    \item Start server (e.g., \texttt{php -S localhost:8000}).
+    \item Open \texttt{index.php} in browser.
+\end{enumerate}
+
+\subsection{Screen Walkthrough}
+\begin{itemize}
+    \item Dashboard cards show total, monthly, forecast, overall budget status.
+    \item Expense form captures transaction details, tags, and recurrence.
+    \item Category panel manages labels, colors, and budget caps.
+    \item Filter row supports search and date interval analysis.
+    \item Report controls handle export and backup/restore.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.9\linewidth}{
+\centering
+[Figure Placeholder]\\
+Main UI screenshot with dashboard cards, form, table, charts, and budget bars.
+}}
+\caption{Main Dashboard Placeholder}
+\label{fig:dashboard}
+\end{figure}
+
+\section{Testing and Validation}
+\subsection{Manual Test Matrix}
+\begin{table}[H]
+\caption{Functional Test Cases}
+\label{tab:tests}
+\centering
+\begin{tabular}{|m{0.9cm}|m{3.2cm}|m{2.4cm}|m{3.2cm}|}
+\hline
+\textbf{ID} & \textbf{Scenario} & \textbf{Input} & \textbf{Expected Result} \\
+\hline
+T1 & Add expense & Valid form data & New row + persisted JSON \\
+\hline
+T2 & Edit expense & Existing ID + amount & Updated table + totals \\
+\hline
+T3 & Delete expense & Existing ID & Item removed from file \\
+\hline
+T4 & Add category & Name/color/budget & Listed in selectors + budgets \\
+\hline
+T5 & Budget alert & High monthly spend & Warning/exceeded UI state \\
+\hline
+T6 & Recurring run & Due next\_date & Auto-generated expense entry \\
+\hline
+T7 & Forecast card & Multi-month history & Prediction + confidence shown \\
+\hline
+T8 & Export report & Active filters & CSV/PDF matches filtered set \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Edge Cases}
+Edge handling includes empty dataset startup, missing fields, invalid numeric inputs, unknown record IDs, and zero-budget categories.
+
+\section{Challenges and Future Work}
+\subsection{Challenges}
+\begin{itemize}
+    \item file-based persistence can face concurrent write risks,
+    \item API growth in single-file backend requires strict structuring,
+    \item basic ML model may underfit real-world spending dynamics.
+\end{itemize}
+
+\subsection{Future Enhancements}
+\begin{itemize}
+    \item migrate to SQLite/MySQL with transactions,
+    \item add secure authentication and user profiles,
+    \item support cloud sync and multi-device access,
+    \item integrate advanced forecasting methods (ARIMA/LSTM),
+    \item add automated unit/integration test suites.
+\end{itemize}
+
+\section{Conclusion}
+Expense Tracker Pro demonstrates that a feature-rich personal finance platform can be built with a lightweight stack while maintaining modularity, usability, and analytical depth. The system combines operational finance management (CRUD, budgets, recurring rules) with interpretive and predictive tools (charts and forecasting), creating a practical digital assistant for everyday financial decisions. The architecture is especially suited to academic projects and rapid prototypes, with clear pathways for industrial hardening in future iterations.
+
+\section*{Acknowledgment}
+The author thanks course mentors, peer reviewers, and open-source communities for resources and technical references that informed implementation choices.
+
+\begin{thebibliography}{00}
+\bibitem{b1} PHP Documentation, ``PHP: Hypertext Preprocessor,'' Available: \url{https://www.php.net/docs.php}
+\bibitem{b2} Chart.js Team, ``Chart.js Documentation,'' Available: \url{https://www.chartjs.org/docs/latest/}
+\bibitem{b3} Mozilla Developer Network, ``Fetch API,'' Available: \url{https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API}
+\bibitem{b4} G. James, D. Witten, T. Hastie, and R. Tibshirani, \emph{An Introduction to Statistical Learning}, Springer, 2021.
+\bibitem{b5} I. Sommerville, \emph{Software Engineering}, 10th ed., Pearson, 2015.
+\bibitem{b6} J. Nielsen, \emph{Usability Engineering}, Morgan Kaufmann, 1993.
+\end{thebibliography}
+
+\end{document}
